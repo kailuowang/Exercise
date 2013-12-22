@@ -1,11 +1,15 @@
 package com.kailuowang.concordance
 
-import com.kailuowang.naturalLanguage.{Word, Processor}
-import DataTypes._
+import com.kailuowang.naturalLanguage.{Token, Word, Processor}
 import scala.collection.immutable.TreeMap
 
 
 object Concordance {
+  type SentenceLabel = Int
+  type SentenceLabels = Vector[SentenceLabel]
+  type Sentence = (Vector[Token], SentenceLabel) //(Tokens in the sentence, Sentence #)
+  type Occurrences = (Int, SentenceLabels)
+  val emptyOccurrence = (0, Vector[SentenceLabel]())
 
   def get(input: Stream[Char])(implicit lp: Processor): List[(String, Occurrences)] = {
 
