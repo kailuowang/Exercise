@@ -106,5 +106,13 @@ class ProcessorSpec extends Specification {
       sentences.last must equalTo("Bonus: label each word with the sentence numbers in which each occurrence appeared.")
     }
 
+    "Find sentences in quotes" in {
+      val input = Processor.tokenize("I said, \"Apple is tasty.\" He disagrees with me. But I am okay with that.")
+      val sentences = Processor.splitToSentences(input)
+      sentences.size must equalTo(3)
+      sentences(0) must contain(Word("tasty"))
+      sentences(1) must contain(Word("He"))
+    }
+
   }
 }
