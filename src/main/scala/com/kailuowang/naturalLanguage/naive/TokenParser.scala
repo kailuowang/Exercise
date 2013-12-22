@@ -14,15 +14,6 @@ object TokenParser {
 
   type Parser =  PartialFunction[String, Token]
 
-  def parse: Function[String, Option[Token]] = (
-      wordPatterns.map { p =>
-        { case w @ p() => Word(w) } : Parser
-      } ++
-      punctPatterns.map { p =>
-        { case punct @ p() => Punctuation(punct) } : Parser
-      }
-    ).reduce(_ orElse _).lift
-
   def parseTokens(string: String): Vector[Token] = {
     @tailrec
     def loop(string: String, memo: Vector[Token]): Vector[Token] =
@@ -38,16 +29,24 @@ object TokenParser {
   }
 
   @tailrec
-  private[naive] def findLongestToken(string: String, rest: String = "" ): (Option[Token], String) = {
+  private[naive] def findLongestToken(string: String, rest: String = "" ): (Option[Token], String) =
     if(string.isEmpty)
       (None, rest)
     else {
-      val tokenAttempt = TokenParser.parse(string.mkString)
+      val tokenAttempt = parse(string.mkString)
       if(tokenAttempt.isDefined)
         (tokenAttempt, rest)
       else
         findLongestToken(string.init, string.last + rest)
     }
-  }
+
+  private[naive] def parse: Function[String, Option[Token]] = (
+    wordPatterns.map { p =>
+      { case w @ p() => Word(w) } : Parser
+    } ++
+      punctPatterns.map { p =>
+        { case punct @ p() => Punctuation(punct) } : Parser
+      }
+    ).reduce(_ orElse _).lift
 
 }

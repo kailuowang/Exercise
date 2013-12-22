@@ -1,7 +1,7 @@
 package com.kailuowang.naturalLanguage.naive
 
-import org.specs2.mutable.Specification
 import com.kailuowang.naturalLanguage.{Punctuation, Word}
+import org.specs2.mutable.Specification
 
 class TokenParserSpec extends Specification {
   "parse" should {

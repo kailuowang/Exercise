@@ -1,8 +1,7 @@
 package com.kailuowang.naturalLanguage.naive
 
-import org.specs2.mutable.Specification
-import org.specs2.specification.Scope
 import com.kailuowang.naturalLanguage._
+import org.specs2.mutable.Specification
 
 
 class ProcessorSpec extends Specification {
