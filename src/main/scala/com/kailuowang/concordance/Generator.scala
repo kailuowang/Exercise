@@ -1,6 +1,8 @@
 package com.kailuowang.concordance
+import DataTypes._
+import com.kailuowang.naturalLanguage.Processor
 
-object Generator {
-  override def toString: String = "Utility to generate a concordance"
 
+class Generator(implicit lp: Processor) {
+  def get(input: Stream[Char]): Map[String, Occurrences] = ???
 }
