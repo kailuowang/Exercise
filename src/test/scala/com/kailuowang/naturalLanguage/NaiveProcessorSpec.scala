@@ -57,26 +57,35 @@ class NaiveProcessorSpec extends Specification {
       case Punctuation(value) => value
     }.mkString.stripPrefix(" ")
 
-    "find sentence that ends before a new sentence starts" in {
+    "find first sentence" in {
       val input = NaiveProcessor.tokenize("This is a test. And there is another sentence.".toStream)
-      val sentences = NaiveProcessor.breakToSentences(input).map(mkString(_))
+      val sentences = NaiveProcessor.splitToSentences(input).map(mkString(_))
       sentences.head must equalTo("This is a test.")
     }
 
     "find last sentence" in {
       val input =  NaiveProcessor.tokenize("This is a test. And there is another sentence.".toStream)
-      val sentences = NaiveProcessor.breakToSentences(input).map(mkString(_))
+      val sentences = NaiveProcessor.splitToSentences(input).map(mkString(_))
       sentences must contain("And there is another sentence.")
     }
-    "find sentence in the middel" in {
+
+    "find sentence in the middle" in {
       val input =  NaiveProcessor.tokenize("This is a test. A middle sentence starts here! And there is another sentence.".toStream)
-      val sentences = NaiveProcessor.breakToSentences(input).map(mkString(_))
+      val sentences = NaiveProcessor.splitToSentences(input).map(mkString(_))
       sentences must contain("A middle sentence starts here!")
     }
 
     "works with one character" in {
       val input =  NaiveProcessor.tokenize("a".toStream)
-      NaiveProcessor.breakToSentences(input).map(mkString(_)) must equalTo(Stream("a"))
+      NaiveProcessor.splitToSentences(input).map(mkString(_)) must equalTo(Stream("a"))
+    }
+
+    "works with given example" in {
+      val input = NaiveProcessor.tokenize("Given an arbitrary text document written in English, write a program that will generate a \n\nconcordance, i.e. an alphabetical list of all word occurrences, labeled with word frequencies. \n\nBonus: label each word with the sentence numbers in which each occurrence appeared.".toStream)
+      val sentences = NaiveProcessor.splitToSentences(input).map(mkString(_))
+      sentences.size must equalTo(2)
+      sentences.head must equalTo("Given an arbitrary text document written in English, write a program that will generate a concordance, i.e. an alphabetical list of all word occurrences, labeled with word frequencies.")
+      sentences.last must equalTo("Bonus: label each word with the sentence numbers in which each occurrence appeared.")
     }
 
   }
