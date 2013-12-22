@@ -1,25 +1,25 @@
 package com.kailuowang.concordance
-import DataTypes._
+
 import com.kailuowang.naturalLanguage.{Word, Processor}
+import DataTypes._
 import scala.collection.immutable.TreeMap
 
 
 object Concordance {
-  val emptyOccurrence = (0, List[Int]())
-  def get(input: Stream[Char])(implicit lp: Processor): Map[String, Occurrences] = {
-    val sentencesInTokens = lp.splitToSentences(lp.tokenize(input))
-    val sentences: Stream[Sentence] = sentencesInTokens zip Stream.from(1)
-    sentences.foldLeft(TreeMap[String, Occurrences]()){ (memo, sentence ) =>
-      val (tokens, sentenceNum) = sentence
+
+  def get(input: Stream[Char])(implicit lp: Processor): List[(String, Occurrences)] = {
+
+    val sentences: Stream[Sentence] = lp.splitToSentences(lp.tokenize(input)) zip Stream.from(1)
+
+    sentences.foldLeft(TreeMap[String, Occurrences]()) { case (memo, (tokens, sentenceLabel)) =>
       tokens.foldLeft(memo) {
-        case (innerMemo, Word(word)) => {
-          val (numOfOccurrences, occurrencesInSentences) = innerMemo.get(word.toLowerCase).getOrElse(emptyOccurrence)
-          innerMemo + (word.toLowerCase -> (numOfOccurrences + 1, sentenceNum :: occurrencesInSentences))
+        case (innerMemo, Word(tokenValue)) => {
+          val word = tokenValue.toLowerCase
+          val (numOfOccurrences, sentenceLabels) = innerMemo.get(word).getOrElse(emptyOccurrence)
+          innerMemo + (word -> (numOfOccurrences + 1, sentenceLabels :+ sentenceLabel))
         }
-        case (innerMemo, _) => innerMemo
+        case (innerMemo, _) => innerMemo   //ignore non-word tokens
       }
-    }.map {
-      case (word, (numOfOccurrences, occurrencesInSentence)) => (word, (numOfOccurrences, occurrencesInSentence.reverse))
-    }
+    }.toList
   }
 }
