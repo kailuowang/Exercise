@@ -15,8 +15,8 @@ object Concordance {
 
     val sentences: Stream[Sentence] = lp.splitToSentences(lp.tokenize(input)) zip Stream.from(1)
 
-    sentences.foldLeft(TreeMap[String, Occurrences]()) { case (memo, (tokens, sentenceLabel)) =>
-      tokens.foldLeft(memo) {
+    sentences.foldLeft(TreeMap[String, Occurrences]()) { case (memo, (sentenceTokens, sentenceLabel)) =>
+      sentenceTokens.foldLeft(memo) {
         case (innerMemo, Word(tokenValue)) => {
           val word = tokenValue.toLowerCase
           val (numOfOccurrences, sentenceLabels) = innerMemo.get(word).getOrElse(emptyOccurrence)
