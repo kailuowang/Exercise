@@ -1,9 +1,12 @@
 package com.kailuowang.naturalLanguage
 
-trait Processor {
-  def splitToSentences(input: Stream[Token]): Stream[Vector[Token]]
+import scalaz.EphemeralStream
 
-  def tokenize(input: Stream[Char]): Stream[Token]
+
+trait Processor {
+  def splitToSentences(input: EphemeralStream[Token]): EphemeralStream[Vector[Token]]
+
+  def tokenize(input: EphemeralStream[Char]): EphemeralStream[Token]
 }
 
 

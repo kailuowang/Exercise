@@ -1,7 +1,9 @@
 package com.kailuowang.concordance
 
-import com.kailuowang.naturalLanguage.{Token, Word, Processor}
+import com.kailuowang.naturalLanguage._
 import scala.collection.immutable.TreeMap
+import scalaz.EphemeralStream
+import scalaz.EphemeralStream._
 
 
 object Concordance {
@@ -11,11 +13,19 @@ object Concordance {
   type Occurrences = (Int, SentenceLabels)
   val emptyOccurrence = (0, Vector[SentenceLabel]())
 
-  def get(input: Stream[Char])(implicit lp: Processor): List[(String, Occurrences)] = {
+  def get(input: Iterator[Char])(implicit lp: Processor): List[(String, Occurrences)] = {
+    def toStream[A](iter: Iterator[A]): EphemeralStream[A] =
+      if (iter.hasNext) iter.next ##:: toStream(iter)
+      else emptyEphemeralStream[A]
+    get(toStream(input))
+  }
 
-    val sentences: Stream[Sentence] = lp.splitToSentences(lp.tokenize(input)) zip Stream.from(1)
+  def get(input: EphemeralStream[Char])(implicit lp: Processor): List[(String, Occurrences)] = {
+    val sequences = EphemeralStream.fromStream(Stream.from(1))
+    val sentences: EphemeralStream[Sentence] = lp.splitToSentences(lp.tokenize(input)) zip sequences
 
-    sentences.foldLeft(TreeMap[String, Occurrences]()) { case (memo, (sentenceTokens, sentenceLabel)) =>
+    sentences.foldLeft(TreeMap[String, Occurrences]()) {  (memo) => (sentence) => {
+      val (sentenceTokens, sentenceLabel) = sentence
       sentenceTokens.foldLeft(memo) {
         case (innerMemo, Word(tokenValue)) => {
           val word = tokenValue.toLowerCase
@@ -24,6 +34,6 @@ object Concordance {
         }
         case (innerMemo, _) => innerMemo   //ignore non-word tokens
       }
-    }.toList
+    }}.toList
   }
 }

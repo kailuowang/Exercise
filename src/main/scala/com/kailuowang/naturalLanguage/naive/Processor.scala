@@ -2,49 +2,51 @@ package com.kailuowang.naturalLanguage.naive
 
 import com.kailuowang.naturalLanguage._
 import scala.annotation.tailrec
-import scala.collection.immutable.Stream.Empty
+import scalaz.EphemeralStream
+import scalaz.EphemeralStream._
 
 object Processor extends Processor {
-
-  def tokenize(input: Stream[Char]): Stream[Token] = {
+  val emptyChars = emptyEphemeralStream[Char]
+  val emptyTokens = emptyEphemeralStream[Token]
+  def tokenize(input: EphemeralStream[Char]): EphemeralStream[Token] = {
     if (input.isEmpty)
-      Empty
+      emptyTokens
     else {
       val (tokens, rest) = sliceByFirstTokens(input)
-      tokens.toStream ++ tokenize(rest)
+      EphemeralStream(tokens: _*) ++ tokenize(rest)
     }
   }
 
-  def splitToSentences(input: Stream[Token]): Stream[Vector[Token]] = {
+  def splitToSentences(input: EphemeralStream[Token]): EphemeralStream[Vector[Token]] = {
     if (input.isEmpty)
-      Empty
+      emptyEphemeralStream
     else {
       val (sentence, rest) = sliceByFirstSentence(input)
-      sentence #:: splitToSentences(rest)
+      sentence ##:: splitToSentences(rest)
     }
   }
 
-  private[naive] def sliceByFirstTokens(input: Stream[Char]): (Vector[Token], Stream[Char]) = {
+  private[naive] def sliceByFirstTokens(input: EphemeralStream[Char]): (Vector[Token], EphemeralStream[Char]) = {
     def isTokenBreak(c: Char) = c == ' ' || c == '\n'
     @tailrec
-    def loop(tokenString: String, rest: Stream[Char]): (Vector[Token], Stream[Char]) =
+    def loop(tokenString: String, rest: EphemeralStream[Char]): (Vector[Token], EphemeralStream[Char]) =
       rest match {
-        case Empty => (TokenParser.parseTokens(tokenString), Empty)
-        case head #:: break #:: rest if isTokenBreak(break) => (TokenParser.parseTokens(tokenString + head), rest)
-        case head #:: rest => loop(tokenString + head, rest)
+        case e if e.isEmpty => (TokenParser.parseTokens(tokenString), emptyChars)
+        case head ##:: break ##:: rest if isTokenBreak(break) => (TokenParser.parseTokens(tokenString + head), rest)
+        case head ##:: rest => loop(tokenString + head, rest)
       }
 
     loop("", input.dropWhile(isTokenBreak(_)))
   }
 
 
-  private def sliceByFirstSentence(input: Stream[Token]): (Vector[Token], Stream[Token]) = {
+  private def sliceByFirstSentence(input: EphemeralStream[Token]): (Vector[Token], EphemeralStream[Token]) = {
     @tailrec
-    def loop(sentence: Vector[Token], rest: Stream[Token]): (Vector[Token], Stream[Token]) =
+    def loop(sentence: Vector[Token], rest: EphemeralStream[Token]): (Vector[Token], EphemeralStream[Token]) =
       rest match {
-        case head #:: Empty => (sentence :+ head, Empty)
-        case (p: Punctuation) #:: tail if p.endsSentence => (sentence :+ p, tail)
-        case head #:: tail => loop(sentence :+ head, tail)
+        case head ##:: tail if tail.isEmpty => (sentence :+ head, emptyTokens)
+        case (p: Punctuation) ##:: tail if p.endsSentence => (sentence :+ p, tail)
+        case head ##:: tail => loop(sentence :+ head, tail)
       }
 
     loop(Vector.empty, input)

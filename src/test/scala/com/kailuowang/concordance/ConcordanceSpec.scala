@@ -2,6 +2,7 @@ package com.kailuowang.concordance
 
 import org.specs2.mutable.Specification
 import com.kailuowang.naturalLanguage.naive.Processor
+import scalaz.EphemeralStream
 
 class ConcordanceSpec extends Specification {
   "Get" should {
@@ -45,7 +46,7 @@ class ConcordanceSpec extends Specification {
 
       val input = "Given an arbitrary text document written in English, write a program that will generate a \n\nconcordance, i.e. an alphabetical list of all word occurrences, labeled with word frequencies. \n\nBonus: label each word with the sentence numbers in which each occurrence appeared."
 
-      Concordance.get(input.toStream)(Processor) must equalTo(expectedResult)
+      Concordance.get(EphemeralStream(input: _*))(Processor) must equalTo(expectedResult)
 
     }
   }
