@@ -100,7 +100,7 @@ class ProcessorSpec extends Specification {
       Processor.splitToSentences(input).map(mkString(_)).head() must equalTo("a")
     }
 
-    "works with given example" in {
+    "works with the given example" in {
       val input = Processor.tokenize("Given an arbitrary text document written in English, write a program that will generate a \n\nconcordance, i.e. an alphabetical list of all word occurrences, labeled with word frequencies. \n\nBonus: label each word with the sentence numbers in which each occurrence appeared.")
       val sentences = Processor.splitToSentences(input).map(mkString(_))
       sentences.size must equalTo(2)

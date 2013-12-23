@@ -10,7 +10,7 @@ class ConcordanceSpec extends Specification {
       Concordance.get("".iterator)(Processor) must beEmpty
     }
 
-    "work with the given example" in {
+    "works for the given example" in {
       val expectedResult = List(
         "a" ->(2, Vector(1, 1)),
         "all" ->(1, Vector(1)),

@@ -35,12 +35,12 @@ class TokenParserSpec extends Specification {
   }
 
   "findLongestToken" should {
-    "find the a single word" in {
+    "find a single word" in {
       val (token, rest) = TokenParser.findLongestToken("apple")
       token must beSome(Word("apple"))
     }
 
-    "find in word with punctuation" in {
+    "find the word with punctuation attached" in {
       val (token, rest) = TokenParser.findLongestToken("apple.")
       token must beSome(Word("apple"))
       rest must equalTo(".")
@@ -54,7 +54,7 @@ class TokenParserSpec extends Specification {
 
   "parseTokens" should {
 
-    "find the a single word" in {
+    "find a single word" in {
       TokenParser.parseTokens("apple") must equalTo(Vector(Word("apple")))
     }
 
@@ -66,7 +66,7 @@ class TokenParserSpec extends Specification {
       TokenParser.parseTokens("apple-orange") must equalTo(Vector(Word("apple"), Punctuation("-"), Word("orange")))
     }
 
-    "find multiple punctuations" in {
+    "find consecutive punctuations" in {
       TokenParser.parseTokens("\"Really?\"") must equalTo(Vector(Punctuation("\""), Word("Really"), Punctuation("?"), Punctuation("\"")))
     }
 

@@ -11,7 +11,6 @@ Requires
 
 
 
-
 Usage
 ---------------
 
@@ -25,7 +24,7 @@ In command Line, you can read from a file:
 
     sbt
 
-    run "PATH_TO_YOUR_FILE"
+    run "PATH_TO_YOUR_FILE"    //e.g. run test.data
 
 
 
