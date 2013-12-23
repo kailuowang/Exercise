@@ -6,6 +6,10 @@ import scalaz.EphemeralStream
 
 class ConcordanceSpec extends Specification {
   "Get" should {
+    "return empty for empty input" in {
+      Concordance.get("".iterator)(Processor) must beEmpty
+    }
+
     "work with the given example" in {
       val expectedResult = List(
         "a" ->(2, Vector(1, 1)),
