@@ -54,9 +54,4 @@ object Processor extends Processor {
     def endsSentence: Boolean = List(".", "!", "?", "...").contains(p.value)
   }
 
-  //a simple helper method from http://stackoverflow.com/questions/4636610/regular-expression-and-pattern-matching-in-scala
-  private implicit class Regex(sc: StringContext) {
-    def r = new util.matching.Regex(sc.parts.mkString, sc.parts.tail.map(_ => "x"): _*)
-  }
-
 }
