@@ -33,7 +33,7 @@ object TokenParser {
     if(string.isEmpty)
       (None, rest)
     else {
-      val tokenAttempt = parse(string.mkString)
+      val tokenAttempt = parse(string)
       if(tokenAttempt.isDefined)
         (tokenAttempt, rest)
       else
